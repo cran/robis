@@ -2,61 +2,43 @@
 % Please edit documentation in R/checklist.R
 \name{checklist}
 \alias{checklist}
-\title{Generate checklists.}
+\title{Create a checklist.}
 \usage{
-checklist(scientificname = NULL, year = NULL, obisid = NULL, aphiaid = NULL,
-  groupid = NULL, resourceid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
-  startdepth = NULL, enddepth = NULL, geometry = NULL, qc = NULL, fields = NULL,
-  verbose = FALSE)
+checklist(scientificname = NULL, taxonid = NULL, datasetid = NULL,
+  nodeid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
+  startdepth = NULL, enddepth = NULL, geometry = NULL, verbose = FALSE)
 }
 \arguments{
-\item{scientificname}{character vector. The full scientific name, with authorship and
-date information if known.}
+\item{scientificname}{the scientific name.}
 
-\item{year}{integer vector. The year in which the Event occurred.}
+\item{taxonid}{the taxon identifier (WoRMS AphiaID).}
 
-\item{obisid}{integer vector. The OBIS identifier of the species.}
+\item{datasetid}{the dataset identifier.}
 
-\item{aphiaid}{integer vector. The WoRMS identifier of the species.}
+\item{nodeid}{the OBIS node identifier.}
 
-\item{groupid}{integer. The taxonomic group id. See also \code{\link{group}} for the
-list of taxonomic groups.}
+\item{areaid}{the OBIS area identifier.}
 
-\item{resourceid}{integer vector. The dataset identifier. See also
-\code{\link{dataset}} for querying the list of datasets.}
+\item{startdate}{the earliest date on which occurrence took place.}
 
-\item{areaid}{integer vector. The OBIS area identifier (country, marine world heritage
-site, ABNJ, EBSA, ...). See also \code{\link{area}} for the list of areas.}
+\item{enddate}{the latest date on which the occurrence took place.}
 
-\item{startdate}{The earliest date on which the Event occurred.}
+\item{startdepth}{the minimum depth below the sea surface.}
 
-\item{enddate}{The latest date on which the Event occurred.}
+\item{enddepth}{the maximum depth below the sea surface.}
 
-\item{startdepth}{The minimum depth below the sea surface.}
+\item{geometry}{a WKT geometry string.}
 
-\item{enddepth}{The maximum depth below the sea surface.}
-
-\item{geometry}{A wkt geometry string.}
-
-\item{qc}{A vector of quality control flags you want to filter on. List of
-\link[=qc]{QC flags}.}
-
-\item{fields}{A vector of field names you want to have returned in order, by default
-all fields with values are returned.}
-
-\item{verbose}{logical. Optional parameter to enable verbose logging (default =
-\code{FALSE}).}
+\item{verbose}{logical. Optional parameter to enable verbose logging (default = \code{FALSE}).}
 }
 \value{
 The checklist.
 }
 \description{
-Generate checklists.
+Create a checklist.
 }
 \examples{
-taxa <- checklist(scientificname = c("Pterois volitans", "Voluta musica"))
-taxa <- checklist(aphiaid = 137091, year = 2000:2002, fields = c("species", "records"))
-}
-\seealso{
-\code{\link{occurrence}} \code{\link{dataset}} \code{\link{area}}
+taxa <- checklist(scientificname = "Tellinidae")
+taxa <- checklist(geometry = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))")
+taxa <- checklist(areaid = 10181)
 }

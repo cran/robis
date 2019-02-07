@@ -1,7 +1,3 @@
-# robis 1.0.1
+# robis 2.0.0
 
-Minor bug fixes release.
-
-# robis 1.0.0
-
-Initial release of the robis package on CRAN.
+This is a major release which links robis to the new OBIS data system released in January 2019.
