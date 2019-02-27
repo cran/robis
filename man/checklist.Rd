@@ -6,7 +6,8 @@
 \usage{
 checklist(scientificname = NULL, taxonid = NULL, datasetid = NULL,
   nodeid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
-  startdepth = NULL, enddepth = NULL, geometry = NULL, verbose = FALSE)
+  startdepth = NULL, enddepth = NULL, geometry = NULL, redlist = NULL,
+  verbose = FALSE)
 }
 \arguments{
 \item{scientificname}{the scientific name.}
@@ -28,6 +29,8 @@ checklist(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 \item{enddepth}{the maximum depth below the sea surface.}
 
 \item{geometry}{a WKT geometry string.}
+
+\item{redlist}{include only IUCN Red List species.}
 
 \item{verbose}{logical. Optional parameter to enable verbose logging (default = \code{FALSE}).}
 }
