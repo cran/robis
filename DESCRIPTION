@@ -1,8 +1,8 @@
 Package: robis
 Title: Ocean Biogeographic Information System (OBIS) Client
 Description: Client for the Ocean Biogeographic Information System (<https://obis.org>).
-Version: 2.1.0
-Date: 2019-02-01
+Version: 2.1.6
+Date: 2019-05-29
 Authors@R: c(
     person("Pieter", "Provoost", , "pieterprovoost@gmail.com", c("cre", "aut")),
     person("Samuel", "Bosch", , "mail@samuelbosch.com", role = "aut"),
@@ -17,11 +17,11 @@ License: MIT + file LICENSE
 Suggests: testthat
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2019-02-26 14:42:49 UTC; pieter
+Packaged: 2019-05-30 22:54:50 UTC; pieter
 Author: Pieter Provoost [cre, aut],
   Samuel Bosch [aut],
   Ward Appeltans [ctb],
   OBIS [cph]
 Maintainer: Pieter Provoost <pieterprovoost@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-02-27 09:20:03 UTC
+Date/Publication: 2019-05-31 04:40:03 UTC

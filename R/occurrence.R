@@ -3,7 +3,7 @@
 #' @usage occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 #'   nodeid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
 #'   startdepth = NULL, enddepth = NULL, geometry = NULL, redlist = NULL,
-#'   verbose = FALSE)
+#'   exclude = NULL, fields = NULL, verbose = FALSE)
 #' @param scientificname the scientific name.
 #' @param taxonid the taxon identifier (WoRMS AphiaID).
 #' @param datasetid the dataset identifier.
@@ -15,6 +15,8 @@
 #' @param enddepth the maximum depth below the sea surface.
 #' @param geometry a WKT geometry string.
 #' @param redlist include only IUCN Red List species.
+#' @param exclude quality flags to be excluded from the results.
+#' @param fields fields to be included in the results.
 #' @param verbose logical. Optional parameter to enable verbose logging (default = \code{FALSE}).
 #' @return The occurrence records.
 #' @examples
@@ -34,6 +36,8 @@ occurrence <- function(
   enddepth = NULL,
   geometry = NULL,
   redlist = NULL,
+  exclude = NULL,
+  fields = NULL,
   verbose = FALSE
 ) {
 
@@ -57,6 +61,8 @@ occurrence <- function(
       enddepth = enddepth,
       geometry = geometry,
       redlist = handle_logical(redlist),
+      exclude = handle_vector(exclude),
+      fields = handle_fields(fields),
       after = after,
       size = page_size()
     )
@@ -86,5 +92,12 @@ occurrence <- function(
   }
 
   data <- bind_rows(result_list)
+
+  depthFields <- intersect(c("minimumDepthInMeters", "maximumDepthInMeters"), names(data))
+  if (length(depthFields) > 0) {
+    data$depth <- rowMeans(data[depthFields], na.rm = TRUE)
+    data$depth[which(is.nan(data$depth))] <- NA
+  }
+
   return(data)
 }
