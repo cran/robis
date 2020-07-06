@@ -3,7 +3,7 @@
 #' @usage checklist(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 #'   nodeid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
 #'   startdepth = NULL, enddepth = NULL, geometry = NULL, redlist = NULL,
-#'   exclude = NULL, verbose = FALSE)
+#'   hab = NULL, flags = NULL, exclude = NULL, verbose = FALSE)
 #' @param scientificname the scientific name.
 #' @param taxonid the taxon identifier (WoRMS AphiaID).
 #' @param datasetid the dataset identifier.
@@ -15,6 +15,8 @@
 #' @param enddepth the maximum depth below the sea surface.
 #' @param geometry a WKT geometry string.
 #' @param redlist include only IUCN Red List species.
+#' @param hab include only IOC-UNESCO HAB species.
+#' @param flags quality flags which need to be set.
 #' @param exclude quality flags to be excluded from the results.
 #' @param verbose logical. Optional parameter to enable verbose logging (default = \code{FALSE}).
 #' @return The checklist.
@@ -35,10 +37,11 @@ checklist <- function(
   enddepth = NULL,
   geometry = NULL,
   redlist = NULL,
+  hab = NULL,
+  flags = NULL,
   exclude = NULL,
   verbose = FALSE
 ) {
-
 
   result_list <- list()
   last_page <- FALSE
@@ -59,6 +62,8 @@ checklist <- function(
       enddepth = enddepth,
       geometry = geometry,
       redlist = handle_logical(redlist),
+      hab = handle_logical(hab),
+      flags = handle_vector(flags),
       exclude = handle_vector(exclude),
       partition = partition
     )
@@ -75,17 +80,23 @@ checklist <- function(
     res <- fromJSON(text, simplifyVector = TRUE)
     total <- res$total
     partition = partition + 1
-    if (partition >= res$partitions) {
+    if (!("partitions" %in% names(res)) || partition >= res$partitions) {
       last_page <- TRUE
     }
 
-    result_list[[partition + 1]] <- res$results
-    fetched <- fetched + nrow(res$results)
+    if (is.data.frame(res$results)) {
+      result_list[[partition + 1]] <- res$results
+      fetched <- fetched + nrow(res$results)
+    }
     log_progress(fetched, total)
 
   }
 
-  data <- bind_rows(result_list)
-  data <- data[order(data$records, decreasing = TRUE),]
-  return(data)
+  if (length(result_list) > 0) {
+    data <- bind_rows(result_list)
+    data <- data[order(data$records, decreasing = TRUE),]
+    return(as_tibble(data %>% arrange(desc(.data$records))))
+  } else {
+    return(tibble())
+  }
 }

@@ -6,8 +6,12 @@
 \usage{
 occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
   nodeid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
-  startdepth = NULL, enddepth = NULL, geometry = NULL, redlist = NULL,
-  exclude = NULL, fields = NULL, verbose = FALSE)
+  startdepth = NULL, enddepth = NULL, geometry = NULL,
+  measurementtype = NULL, measurementtypeid = NULL, measurementvalue = NULL,
+  measurementvalueid = NULL, measurementunit = NULL, measurementunitid = NULL,
+  redlist = NULL, hab = NULL, mof = NULL, absence = NULL, event = NULL,
+  dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
+  verbose = FALSE)
 }
 \arguments{
 \item{scientificname}{the scientific name.}
@@ -30,7 +34,31 @@ occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 
 \item{geometry}{a WKT geometry string.}
 
+\item{measurementtype}{the measurement type to be included in the measurements data.}
+
+\item{measurementtypeid}{the measurement type ID to be included in the measurements data.}
+
+\item{measurementvalue}{the measurement value to be included in the measurements data.}
+
+\item{measurementvalueid}{the measurement value ID to be included in the measurements data.}
+
+\item{measurementunit}{the measurement unit to be included in the measurements data.}
+
+\item{measurementunitid}{the measurement unit ID to be included in the measurements data.}
+
 \item{redlist}{include only IUCN Red List species.}
+
+\item{hab}{include only IOC-UNESCO HAB species.}
+
+\item{mof}{include measurements data (default = \code{NULL}).}
+
+\item{absence}{only include absence records (\code{TRUE}), exclude absence records (\code{NULL}) or include absence records (\code{include}).}
+
+\item{event}{only include pure event records (\code{TRUE}), exclude pure event records (\code{NULL}) or include event records (\code{include}).}
+
+\item{dropped}{only include dropped records (\code{TRUE}), exclude dropped records (\code{NULL}) or include dropped records (\code{include}).}
+
+\item{flags}{quality flags which need to be set.}
 
 \item{exclude}{quality flags to be excluded from the results.}
 

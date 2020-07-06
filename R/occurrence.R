@@ -2,8 +2,12 @@
 #'
 #' @usage occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 #'   nodeid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
-#'   startdepth = NULL, enddepth = NULL, geometry = NULL, redlist = NULL,
-#'   exclude = NULL, fields = NULL, verbose = FALSE)
+#'   startdepth = NULL, enddepth = NULL, geometry = NULL,
+#'   measurementtype = NULL, measurementtypeid = NULL, measurementvalue = NULL,
+#'   measurementvalueid = NULL, measurementunit = NULL, measurementunitid = NULL,
+#'   redlist = NULL, hab = NULL, mof = NULL, absence = NULL, event = NULL,
+#'   dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
+#'   verbose = FALSE)
 #' @param scientificname the scientific name.
 #' @param taxonid the taxon identifier (WoRMS AphiaID).
 #' @param datasetid the dataset identifier.
@@ -13,8 +17,20 @@
 #' @param enddate the latest date on which the occurrence took place.
 #' @param startdepth the minimum depth below the sea surface.
 #' @param enddepth the maximum depth below the sea surface.
+#' @param measurementtype the measurement type to be included in the measurements data.
+#' @param measurementtypeid the measurement type ID to be included in the measurements data.
+#' @param measurementvalue the measurement value to be included in the measurements data.
+#' @param measurementvalueid the measurement value ID to be included in the measurements data.
+#' @param measurementunit the measurement unit to be included in the measurements data.
+#' @param measurementunitid the measurement unit ID to be included in the measurements data.
 #' @param geometry a WKT geometry string.
 #' @param redlist include only IUCN Red List species.
+#' @param hab include only IOC-UNESCO HAB species.
+#' @param mof include measurements data (default = \code{NULL}).
+#' @param absence only include absence records (\code{TRUE}), exclude absence records (\code{NULL}) or include absence records (\code{include}).
+#' @param event only include pure event records (\code{TRUE}), exclude pure event records (\code{NULL}) or include event records (\code{include}).
+#' @param dropped only include dropped records (\code{TRUE}), exclude dropped records (\code{NULL}) or include dropped records (\code{include}).
+#' @param flags quality flags which need to be set.
 #' @param exclude quality flags to be excluded from the results.
 #' @param fields fields to be included in the results.
 #' @param verbose logical. Optional parameter to enable verbose logging (default = \code{FALSE}).
@@ -35,7 +51,19 @@ occurrence <- function(
   startdepth = NULL,
   enddepth = NULL,
   geometry = NULL,
+  measurementtype = NULL,
+  measurementtypeid = NULL,
+  measurementvalue = NULL,
+  measurementvalueid = NULL,
+  measurementunit = NULL,
+  measurementunitid = NULL,
   redlist = NULL,
+  hab = NULL,
+  mof = NULL,
+  absence = NULL,
+  event = NULL,
+  dropped = NULL,
+  flags = NULL,
   exclude = NULL,
   fields = NULL,
   verbose = FALSE
@@ -47,27 +75,46 @@ occurrence <- function(
   i <- 1
   fetched <- 0
 
+  query <- list(
+    scientificname = handle_vector(scientificname),
+    taxonid = handle_vector(taxonid),
+    datasetid = handle_vector(datasetid),
+    nodeid = handle_vector(nodeid),
+    areaid = handle_vector(areaid),
+    startdate = handle_date(startdate),
+    enddate = handle_date(enddate),
+    startdepth = startdepth,
+    enddepth = enddepth,
+    geometry = geometry,
+    measurementtype = measurementtype,
+    measurementtypeid = measurementtypeid,
+    measurementvalue = measurementvalue,
+    measurementvalueid = measurementvalueid,
+    measurementunit = measurementunit,
+    measurementunitid = measurementunitid,
+    redlist = handle_logical(redlist),
+    hab = handle_logical(hab),
+    mof = handle_logical(mof),
+    absence = absence,
+    event = event,
+    dropped = dropped,
+    flags = handle_vector(flags),
+    exclude = handle_vector(exclude),
+    fields = handle_fields(fields)
+  )
+
+  result <- http_request("GET", "metrics/logusage", c(query, list(agent = "robis")))
+
+  if (verbose) {
+    log_request(result)
+  }
+
   while (!last_page) {
 
-    query <- list(
-      scientificname = handle_vector(scientificname),
-      taxonid = handle_vector(taxonid),
-      datasetid = handle_vector(datasetid),
-      nodeid = handle_vector(nodeid),
-      areaid = handle_vector(areaid),
-      startdate = handle_date(startdate),
-      enddate = handle_date(enddate),
-      startdepth = startdepth,
-      enddepth = enddepth,
-      geometry = geometry,
-      redlist = handle_logical(redlist),
-      exclude = handle_vector(exclude),
-      fields = handle_fields(fields),
+    result <- http_request("GET", "occurrence", c(query, list(
       after = after,
       size = page_size()
-    )
-
-    result <- http_request("GET", "occurrence", query)
+    )))
 
     if (verbose) {
       log_request(result)
@@ -83,6 +130,10 @@ occurrence <- function(
     if (!is.null(res$results) && is.data.frame(res$results) && nrow(res$results) > 0) {
       if ("node_id" %in% names(res$results)) {
         res$results$node_id <- sapply(res$results$node_id, paste0, collapse = ",")
+      }
+      if ("flags" %in% names(res$results)) {
+        res$results$flags <- sapply(res$results$flags, paste0, collapse = ",")
+        res$results$flags[res$results$flags == ""] <- NA
       }
       result_list[[i]] <- res$results
       fetched <- fetched + nrow(res$results)
@@ -102,5 +153,5 @@ occurrence <- function(
     data$depth[which(is.nan(data$depth))] <- NA
   }
 
-  return(data)
+  return(as_tibble(data))
 }

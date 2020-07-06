@@ -1,3 +1,55 @@
+# robis 2.3.9
+
+Documentation fixes.
+
+# robis 2.3.8
+
+Added `get_geometry()` to construct WKT geometries.
+
+# robis 2.3.7
+
+Returning tibbles instead of dataframes.
+
+# robis 2.3.6
+
+Added option to cache HTTP requests.
+
+# robis 2.3.5
+
+Added the option to include pure event records in the occurrence response.
+
+# robis 2.3.4
+
+Added the option to filter on quality flags.
+
+# robis 2.3.3
+
+Added support for dropped and absence records.
+
+# robis 2.3.1
+
+Fixed the Leaflet base map.
+
+# robis 2.3.0
+
+Added quality flags to occurrence results.
+
+# robis 2.1.12
+
+Improved dataset usage metrics.
+
+# robis 2.1.11
+
+Bugfix for checklist of unknown taxon.
+
+# robis 2.1.10
+
+Added hab parameter for IOC-UNESCO HAB species.
+
+# robis 2.1.9
+
+Fix for empty checklists.
+
 # robis 2.1.8
 
 Critical fix for `occurrence()` bug introduced in version 2.1.7.

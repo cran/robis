@@ -1,3 +1,7 @@
+use_cache <- function() {
+  getOption("robis_use_cache", FALSE)
+}
+
 api_url <- function() {
   getOption("robis_api_url", "https://api.obis.org/v3/")
 }
@@ -42,11 +46,18 @@ handle_fields <- function(x) {
 }
 
 http_request <- function(method, path, query) {
+  if (use_cache()) {
+    get <- httpcache::GET
+    post <- httpcache::POST
+  } else {
+    get <- httr::GET
+    post <- httr::POST
+  }
   url <- paste0(api_url(), path)
   if (method == "GET") {
-    GET(url, user_agent("robis - https://github.com/iobis/robis"), query = query)
+    get(url, user_agent("robis - https://github.com/iobis/robis"), query = query)
   } else if (method == "POST") {
-    POST(url, user_agent("robis - https://github.com/iobis/robis"), body = query)
+    post(url, user_agent("robis - https://github.com/iobis/robis"), body = query)
   }
 }
 
@@ -64,7 +75,11 @@ empty_cols <- function(df) {
 }
 
 log_progress <- function(total, count) {
-  pct <- floor(total / count * 100)
-  if (pct > 100) pct <- 100
+  if (count > 0) {
+    pct <- floor(total / count * 100)
+    if (pct > 100) pct <- 100
+  } else {
+    pct <- 100
+  }
   message(paste0("\rRetrieved ", total, " records of approximately ", count, " (", pct, "%)", sep = ""), appendLF = FALSE)
 }
