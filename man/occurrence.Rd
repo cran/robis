@@ -9,9 +9,9 @@ occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
   startdepth = NULL, enddepth = NULL, geometry = NULL,
   measurementtype = NULL, measurementtypeid = NULL, measurementvalue = NULL,
   measurementvalueid = NULL, measurementunit = NULL, measurementunitid = NULL,
-  redlist = NULL, hab = NULL, mof = NULL, absence = NULL, event = NULL,
-  dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
-  verbose = FALSE)
+  redlist = NULL, hab = NULL, wrims = NULL, mof = NULL, absence = NULL,
+  event = NULL, dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
+  qcfields = NULL, verbose = FALSE)
 }
 \arguments{
 \item{scientificname}{the scientific name.}
@@ -50,6 +50,8 @@ occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 
 \item{hab}{include only IOC-UNESCO HAB species.}
 
+\item{wrims}{include only WRiMS species.}
+
 \item{mof}{include measurements data (default = \code{NULL}).}
 
 \item{absence}{only include absence records (\code{TRUE}), exclude absence records (\code{NULL}) or include absence records (\code{include}).}
@@ -63,6 +65,8 @@ occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 \item{exclude}{quality flags to be excluded from the results.}
 
 \item{fields}{fields to be included in the results.}
+
+\item{qcfields}{include lists of missing and invalid fields (default = \code{NULL}).}
 
 \item{verbose}{logical. Optional parameter to enable verbose logging (default = \code{FALSE}).}
 }

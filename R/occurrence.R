@@ -5,9 +5,9 @@
 #'   startdepth = NULL, enddepth = NULL, geometry = NULL,
 #'   measurementtype = NULL, measurementtypeid = NULL, measurementvalue = NULL,
 #'   measurementvalueid = NULL, measurementunit = NULL, measurementunitid = NULL,
-#'   redlist = NULL, hab = NULL, mof = NULL, absence = NULL, event = NULL,
-#'   dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
-#'   verbose = FALSE)
+#'   redlist = NULL, hab = NULL, wrims = NULL, mof = NULL, absence = NULL,
+#'   event = NULL, dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
+#'   qcfields = NULL, verbose = FALSE)
 #' @param scientificname the scientific name.
 #' @param taxonid the taxon identifier (WoRMS AphiaID).
 #' @param datasetid the dataset identifier.
@@ -26,6 +26,7 @@
 #' @param geometry a WKT geometry string.
 #' @param redlist include only IUCN Red List species.
 #' @param hab include only IOC-UNESCO HAB species.
+#' @param wrims include only WRiMS species.
 #' @param mof include measurements data (default = \code{NULL}).
 #' @param absence only include absence records (\code{TRUE}), exclude absence records (\code{NULL}) or include absence records (\code{include}).
 #' @param event only include pure event records (\code{TRUE}), exclude pure event records (\code{NULL}) or include event records (\code{include}).
@@ -33,6 +34,7 @@
 #' @param flags quality flags which need to be set.
 #' @param exclude quality flags to be excluded from the results.
 #' @param fields fields to be included in the results.
+#' @param qcfields include lists of missing and invalid fields (default = \code{NULL}).
 #' @param verbose logical. Optional parameter to enable verbose logging (default = \code{FALSE}).
 #' @return The occurrence records.
 #' @examples
@@ -59,6 +61,7 @@ occurrence <- function(
   measurementunitid = NULL,
   redlist = NULL,
   hab = NULL,
+  wrims = NULL,
   mof = NULL,
   absence = NULL,
   event = NULL,
@@ -66,6 +69,7 @@ occurrence <- function(
   flags = NULL,
   exclude = NULL,
   fields = NULL,
+  qcfields = NULL,
   verbose = FALSE
 ) {
 
@@ -94,40 +98,40 @@ occurrence <- function(
     measurementunitid = measurementunitid,
     redlist = handle_logical(redlist),
     hab = handle_logical(hab),
+    wrims = handle_logical(wrims),
     mof = handle_logical(mof),
     absence = absence,
     event = event,
     dropped = dropped,
     flags = handle_vector(flags),
     exclude = handle_vector(exclude),
-    fields = handle_fields(fields)
+    fields = handle_fields(fields),
+    qcfields = handle_logical(qcfields)
   )
 
-  result <- http_request("GET", "metrics/logusage", c(query, list(agent = "robis")))
+  result <- http_request("GET", "metrics/logusage", c(query, list(agent = "robis")), verbose)
+  if (is.null(result)) return(invisible(NULL))
 
-  if (verbose) {
-    log_request(result)
-  }
+  total <- NA
 
   while (!last_page) {
 
     result <- http_request("GET", "occurrence", c(query, list(
       after = after,
-      size = page_size()
+      size = page_size(),
+      total = FALSE # needs to be set explicitely to not track counts for subsequent pages
     )))
-
-    if (verbose) {
-      log_request(result)
-    }
-
-    stop_for_status(result)
+    if (is.null(result)) return(invisible(NULL))
 
     text <- content(result, "text", encoding = "UTF-8")
     res <- fromJSON(text, simplifyVector = TRUE)
-    total <- res$total
+    if (is.na(total)) total <- res$total
     after <- res$results$id[nrow(res$results)]
 
     if (!is.null(res$results) && is.data.frame(res$results) && nrow(res$results) > 0) {
+
+      # handle array values
+
       if ("node_id" %in% names(res$results)) {
         res$results$node_id <- sapply(res$results$node_id, paste0, collapse = ",")
       }
@@ -135,6 +139,22 @@ occurrence <- function(
         res$results$flags <- sapply(res$results$flags, paste0, collapse = ",")
         res$results$flags[res$results$flags == ""] <- NA
       }
+      if ("invalid" %in% names(res$results)) {
+        res$results$invalid <- sapply(res$results$invalid, paste0, collapse = ",")
+        res$results$invalid[res$results$invalid == ""] <- NA
+      }
+      if ("missing" %in% names(res$results)) {
+        res$results$missing <- sapply(res$results$missing, paste0, collapse = ",")
+        res$results$missing[res$results$missing == ""] <- NA
+      }
+
+      # force class character
+
+      character_cols <- c("sex", "testing")
+
+      res$results <- res$results %>%
+        mutate_at(intersect(names(res$results), character_cols), as.character)
+
       result_list[[i]] <- res$results
       fetched <- fetched + nrow(res$results)
       log_progress(fetched, total)

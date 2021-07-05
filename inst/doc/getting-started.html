@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Getting started with the robis package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Getting started with the robis package</h1>
+
+
+
+<p>First load the package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(robis)</span></code></pre></div>
+<div id="occurrences" class="section level2">
+<h2>Occurrences</h2>
+<p>The <code>occurrence()</code> function provides access to raw occurrence data. For example, to fetch all occurrences by scientific name:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">occurrence</span>(<span class="st">&quot;Abra aequalis&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co">#&gt; # A tibble: 767 x 99</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co">#&gt;    country   date_year scientificNameID       year  scientificName superfamilyid</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">#&gt;    &lt;chr&gt;         &lt;int&gt; &lt;chr&gt;                  &lt;chr&gt; &lt;chr&gt;                  &lt;int&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co">#&gt;  1 United S…      1976 urn:lsid:marinespecie… 1976  Abra aequalis          14636</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">#&gt;  2 United S…      1977 urn:lsid:marinespecie… 1977  Abra aequalis          14636</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">#&gt;  3 United S…      1979 urn:lsid:marinespecie… 1979  Abra aequalis          14636</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#&gt;  4 &lt;NA&gt;           1986 urn:lsid:marinespecie… 1986  Abra aequalis          14636</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#&gt;  5 &lt;NA&gt;           2013 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#&gt;  6 &lt;NA&gt;           1994 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#&gt;  7 &lt;NA&gt;           1972 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#&gt;  8 &lt;NA&gt;           1996 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#&gt;  9 &lt;NA&gt;           2013 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="co">#&gt; 10 &lt;NA&gt;           2001 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="co">#&gt; # … with 757 more rows, and 93 more variables: individualCount &lt;chr&gt;,</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="co">#&gt; #   dropped &lt;lgl&gt;, aphiaID &lt;int&gt;, decimalLatitude &lt;dbl&gt;, subclassid &lt;int&gt;,</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="co">#&gt; #   phylumid &lt;int&gt;, familyid &lt;int&gt;, basisOfRecord &lt;chr&gt;, subterclassid &lt;int&gt;,</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="co">#&gt; #   maximumDepthInMeters &lt;dbl&gt;, id &lt;chr&gt;, day &lt;chr&gt;, order &lt;chr&gt;,</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="co">#&gt; #   dataset_id &lt;chr&gt;, decimalLongitude &lt;dbl&gt;, collectionCode &lt;chr&gt;,</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="co">#&gt; #   date_end &lt;dbl&gt;, speciesid &lt;int&gt;, superfamily &lt;chr&gt;, date_start &lt;dbl&gt;,</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="co">#&gt; #   month &lt;chr&gt;, genus &lt;chr&gt;, bibliographicCitation &lt;chr&gt;, subterclass &lt;chr&gt;,</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a><span class="co">#&gt; #   eventDate &lt;chr&gt;, superorder &lt;chr&gt;, coordinateUncertaintyInMeters &lt;chr&gt;,</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="co">#&gt; #   absence &lt;lgl&gt;, superorderid &lt;int&gt;, genusid &lt;int&gt;,</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a><span class="co">#&gt; #   originalScientificName &lt;chr&gt;, marine &lt;lgl&gt;, minimumDepthInMeters &lt;dbl&gt;,</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a><span class="co">#&gt; #   infraclassid &lt;int&gt;, institutionCode &lt;chr&gt;, date_mid &lt;dbl&gt;,</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a><span class="co">#&gt; #   infraclass &lt;chr&gt;, class &lt;chr&gt;, orderid &lt;int&gt;, waterBody &lt;chr&gt;,</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a><span class="co">#&gt; #   kingdom &lt;chr&gt;, recordedBy &lt;chr&gt;, classid &lt;int&gt;, phylum &lt;chr&gt;,</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a><span class="co">#&gt; #   species &lt;chr&gt;, subclass &lt;chr&gt;, family &lt;chr&gt;, kingdomid &lt;int&gt;,</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a><span class="co">#&gt; #   node_id &lt;chr&gt;, flags &lt;chr&gt;, sss &lt;dbl&gt;, shoredistance &lt;int&gt;, sst &lt;dbl&gt;,</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a><span class="co">#&gt; #   bathymetry &lt;int&gt;, dynamicProperties &lt;chr&gt;, associatedReferences &lt;chr&gt;,</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a><span class="co">#&gt; #   fieldNumber &lt;chr&gt;, catalogNumber &lt;chr&gt;, locality &lt;chr&gt;,</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a><span class="co">#&gt; #   stateProvince &lt;chr&gt;, scientificNameAuthorship &lt;chr&gt;, preparations &lt;chr&gt;,</span></span>
+<span id="cb2-33"><a href="#cb2-33"></a><span class="co">#&gt; #   depth &lt;dbl&gt;, identifiedBy &lt;chr&gt;, type &lt;chr&gt;, taxonRemarks &lt;chr&gt;,</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a><span class="co">#&gt; #   occurrenceStatus &lt;chr&gt;, materialSampleID &lt;chr&gt;, occurrenceID &lt;chr&gt;,</span></span>
+<span id="cb2-35"><a href="#cb2-35"></a><span class="co">#&gt; #   ownerInstitutionCode &lt;chr&gt;, samplingProtocol &lt;chr&gt;, taxonRank &lt;chr&gt;,</span></span>
+<span id="cb2-36"><a href="#cb2-36"></a><span class="co">#&gt; #   datasetName &lt;chr&gt;, datasetID &lt;chr&gt;, collectionID &lt;chr&gt;, eventID &lt;chr&gt;,</span></span>
+<span id="cb2-37"><a href="#cb2-37"></a><span class="co">#&gt; #   habitat &lt;chr&gt;, associatedMedia &lt;lgl&gt;, associatedSequences &lt;lgl&gt;,</span></span>
+<span id="cb2-38"><a href="#cb2-38"></a><span class="co">#&gt; #   dateIdentified &lt;chr&gt;, verbatimDepth &lt;chr&gt;, occurrenceRemarks &lt;chr&gt;,</span></span>
+<span id="cb2-39"><a href="#cb2-39"></a><span class="co">#&gt; #   county &lt;chr&gt;, modified &lt;lgl&gt;, infraspecificEpithet &lt;lgl&gt;,</span></span>
+<span id="cb2-40"><a href="#cb2-40"></a><span class="co">#&gt; #   recordNumber &lt;lgl&gt;, higherGeography &lt;chr&gt;, continent &lt;chr&gt;,</span></span>
+<span id="cb2-41"><a href="#cb2-41"></a><span class="co">#&gt; #   typeStatus &lt;lgl&gt;, geodeticDatum &lt;lgl&gt;, specificEpithet &lt;chr&gt;,</span></span>
+<span id="cb2-42"><a href="#cb2-42"></a><span class="co">#&gt; #   georeferenceSources &lt;lgl&gt;, coordinatePrecision &lt;chr&gt;</span></span></code></pre></div>
+<p>Alternatively, occurrences can be fetched by AphiaID:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">occurrence</span>(<span class="dt">taxonid =</span> <span class="dv">293683</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co">#&gt; # A tibble: 767 x 99</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#&gt;    country   date_year scientificNameID       year  scientificName superfamilyid</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#&gt;    &lt;chr&gt;         &lt;int&gt; &lt;chr&gt;                  &lt;chr&gt; &lt;chr&gt;                  &lt;int&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">#&gt;  1 United S…      1976 urn:lsid:marinespecie… 1976  Abra aequalis          14636</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">#&gt;  2 United S…      1977 urn:lsid:marinespecie… 1977  Abra aequalis          14636</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">#&gt;  3 United S…      1979 urn:lsid:marinespecie… 1979  Abra aequalis          14636</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">#&gt;  4 &lt;NA&gt;           1986 urn:lsid:marinespecie… 1986  Abra aequalis          14636</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">#&gt;  5 &lt;NA&gt;           2013 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co">#&gt;  6 &lt;NA&gt;           1994 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co">#&gt;  7 &lt;NA&gt;           1972 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">#&gt;  8 &lt;NA&gt;           1996 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co">#&gt;  9 &lt;NA&gt;           2013 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#&gt; 10 &lt;NA&gt;           2001 urn:lsid:marinespecie… &lt;NA&gt;  Abra aequalis          14636</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">#&gt; # … with 757 more rows, and 93 more variables: individualCount &lt;chr&gt;,</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="co">#&gt; #   dropped &lt;lgl&gt;, aphiaID &lt;int&gt;, decimalLatitude &lt;dbl&gt;, subclassid &lt;int&gt;,</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="co">#&gt; #   phylumid &lt;int&gt;, familyid &lt;int&gt;, basisOfRecord &lt;chr&gt;, subterclassid &lt;int&gt;,</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="co">#&gt; #   maximumDepthInMeters &lt;dbl&gt;, id &lt;chr&gt;, day &lt;chr&gt;, order &lt;chr&gt;,</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="co">#&gt; #   dataset_id &lt;chr&gt;, decimalLongitude &lt;dbl&gt;, collectionCode &lt;chr&gt;,</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="co">#&gt; #   date_end &lt;dbl&gt;, speciesid &lt;int&gt;, superfamily &lt;chr&gt;, date_start &lt;dbl&gt;,</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="co">#&gt; #   month &lt;chr&gt;, genus &lt;chr&gt;, bibliographicCitation &lt;chr&gt;, subterclass &lt;chr&gt;,</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a><span class="co">#&gt; #   eventDate &lt;chr&gt;, superorder &lt;chr&gt;, coordinateUncertaintyInMeters &lt;chr&gt;,</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a><span class="co">#&gt; #   absence &lt;lgl&gt;, superorderid &lt;int&gt;, genusid &lt;int&gt;,</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a><span class="co">#&gt; #   originalScientificName &lt;chr&gt;, marine &lt;lgl&gt;, minimumDepthInMeters &lt;dbl&gt;,</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a><span class="co">#&gt; #   infraclassid &lt;int&gt;, institutionCode &lt;chr&gt;, date_mid &lt;dbl&gt;,</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="co">#&gt; #   infraclass &lt;chr&gt;, class &lt;chr&gt;, orderid &lt;int&gt;, waterBody &lt;chr&gt;,</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a><span class="co">#&gt; #   kingdom &lt;chr&gt;, recordedBy &lt;chr&gt;, classid &lt;int&gt;, phylum &lt;chr&gt;,</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="co">#&gt; #   species &lt;chr&gt;, subclass &lt;chr&gt;, family &lt;chr&gt;, kingdomid &lt;int&gt;,</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a><span class="co">#&gt; #   node_id &lt;chr&gt;, flags &lt;chr&gt;, sss &lt;dbl&gt;, shoredistance &lt;int&gt;, sst &lt;dbl&gt;,</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a><span class="co">#&gt; #   bathymetry &lt;int&gt;, dynamicProperties &lt;chr&gt;, associatedReferences &lt;chr&gt;,</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="co">#&gt; #   fieldNumber &lt;chr&gt;, catalogNumber &lt;chr&gt;, locality &lt;chr&gt;,</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a><span class="co">#&gt; #   stateProvince &lt;chr&gt;, scientificNameAuthorship &lt;chr&gt;, preparations &lt;chr&gt;,</span></span>
+<span id="cb3-33"><a href="#cb3-33"></a><span class="co">#&gt; #   depth &lt;dbl&gt;, identifiedBy &lt;chr&gt;, type &lt;chr&gt;, taxonRemarks &lt;chr&gt;,</span></span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="co">#&gt; #   occurrenceStatus &lt;chr&gt;, materialSampleID &lt;chr&gt;, occurrenceID &lt;chr&gt;,</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a><span class="co">#&gt; #   ownerInstitutionCode &lt;chr&gt;, samplingProtocol &lt;chr&gt;, taxonRank &lt;chr&gt;,</span></span>
+<span id="cb3-36"><a href="#cb3-36"></a><span class="co">#&gt; #   datasetName &lt;chr&gt;, datasetID &lt;chr&gt;, collectionID &lt;chr&gt;, eventID &lt;chr&gt;,</span></span>
+<span id="cb3-37"><a href="#cb3-37"></a><span class="co">#&gt; #   habitat &lt;chr&gt;, associatedMedia &lt;lgl&gt;, associatedSequences &lt;lgl&gt;,</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a><span class="co">#&gt; #   dateIdentified &lt;chr&gt;, verbatimDepth &lt;chr&gt;, occurrenceRemarks &lt;chr&gt;,</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a><span class="co">#&gt; #   county &lt;chr&gt;, modified &lt;lgl&gt;, infraspecificEpithet &lt;lgl&gt;,</span></span>
+<span id="cb3-40"><a href="#cb3-40"></a><span class="co">#&gt; #   recordNumber &lt;lgl&gt;, higherGeography &lt;chr&gt;, continent &lt;chr&gt;,</span></span>
+<span id="cb3-41"><a href="#cb3-41"></a><span class="co">#&gt; #   typeStatus &lt;lgl&gt;, geodeticDatum &lt;lgl&gt;, specificEpithet &lt;chr&gt;,</span></span>
+<span id="cb3-42"><a href="#cb3-42"></a><span class="co">#&gt; #   georeferenceSources &lt;lgl&gt;, coordinatePrecision &lt;chr&gt;</span></span></code></pre></div>
+<p>Other parameters include <code>geometry</code>, which accepts polygons in WKT format:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">occurrence</span>(<span class="st">&quot;Abra alba&quot;</span>, <span class="dt">geometry =</span> <span class="st">&quot;POLYGON ((2.59689 51.16772, 2.62436 51.14059, 2.76066 51.19225, 2.73216 51.20946, 2.59689 51.16772))&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co">#&gt; # A tibble: 319 x 85</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#&gt;    date_year scientificNameID year  scientificName superfamilyid individualCount</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co">#&gt;        &lt;int&gt; &lt;chr&gt;            &lt;chr&gt; &lt;chr&gt;                  &lt;int&gt; &lt;chr&gt;          </span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co">#&gt;  1      1998 urn:lsid:marine… 1998  Abra alba              14636 24.0           </span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co">#&gt;  2      2000 urn:lsid:marine… 2000  Abra alba              14636 &lt;NA&gt;           </span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">#&gt;  3      1995 urn:lsid:marine… 1995  Abra alba              14636 127.0          </span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co">#&gt;  4      1997 urn:lsid:marine… 1997  Abra alba              14636 10.0           </span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co">#&gt;  5      1989 urn:lsid:marine… 1989  Abra alba              14636 20.0           </span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="co">#&gt;  6      1996 urn:lsid:marine… 1996  Abra alba              14636 1.0            </span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="co">#&gt;  7      2013 urn:lsid:marine… 2013  Abra alba              14636 &lt;NA&gt;           </span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="co">#&gt;  8      2007 urn:lsid:marine… 2007  Abra alba              14636 &lt;NA&gt;           </span></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="co">#&gt;  9      2016 urn:lsid:marine… 2016  Abra alba              14636 &lt;NA&gt;           </span></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="co">#&gt; 10      1981 urn:lsid:marine… 1981  Abra alba              14636 9.0            </span></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="co">#&gt; # … with 309 more rows, and 79 more variables: dropped &lt;lgl&gt;,</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="co">#&gt; #   fieldNumber &lt;chr&gt;, aphiaID &lt;int&gt;, decimalLatitude &lt;dbl&gt;, subclassid &lt;int&gt;,</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="co">#&gt; #   phylumid &lt;int&gt;, familyid &lt;int&gt;, catalogNumber &lt;chr&gt;,</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="co">#&gt; #   occurrenceStatus &lt;chr&gt;, basisOfRecord &lt;chr&gt;, subterclassid &lt;int&gt;,</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="co">#&gt; #   modified &lt;chr&gt;, maximumDepthInMeters &lt;dbl&gt;, id &lt;chr&gt;, day &lt;chr&gt;,</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="co">#&gt; #   order &lt;chr&gt;, dataset_id &lt;chr&gt;, locality &lt;chr&gt;, decimalLongitude &lt;dbl&gt;,</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="co">#&gt; #   collectionCode &lt;chr&gt;, date_end &lt;dbl&gt;, speciesid &lt;int&gt;, occurrenceID &lt;chr&gt;,</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="co">#&gt; #   superfamily &lt;chr&gt;, date_start &lt;dbl&gt;, month &lt;chr&gt;, genus &lt;chr&gt;,</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a><span class="co">#&gt; #   samplingProtocol &lt;chr&gt;, subterclass &lt;chr&gt;, eventDate &lt;chr&gt;, eventID &lt;chr&gt;,</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a><span class="co">#&gt; #   superorder &lt;chr&gt;, absence &lt;lgl&gt;, samplingEffort &lt;chr&gt;, superorderid &lt;int&gt;,</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a><span class="co">#&gt; #   genusid &lt;int&gt;, originalScientificName &lt;chr&gt;, marine &lt;lgl&gt;,</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a><span class="co">#&gt; #   minimumDepthInMeters &lt;dbl&gt;, infraclassid &lt;int&gt;, institutionCode &lt;chr&gt;,</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a><span class="co">#&gt; #   date_mid &lt;dbl&gt;, infraclass &lt;chr&gt;, class &lt;chr&gt;, orderid &lt;int&gt;, sex &lt;chr&gt;,</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a><span class="co">#&gt; #   geodeticDatum &lt;chr&gt;, kingdom &lt;chr&gt;, recordedBy &lt;chr&gt;, classid &lt;int&gt;,</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a><span class="co">#&gt; #   phylum &lt;chr&gt;, lifeStage &lt;chr&gt;, species &lt;chr&gt;, subclass &lt;chr&gt;,</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a><span class="co">#&gt; #   datasetID &lt;chr&gt;, family &lt;chr&gt;, kingdomid &lt;int&gt;, node_id &lt;chr&gt;, flags &lt;chr&gt;,</span></span>
+<span id="cb4-31"><a href="#cb4-31"></a><span class="co">#&gt; #   sss &lt;dbl&gt;, shoredistance &lt;int&gt;, sst &lt;dbl&gt;, bathymetry &lt;dbl&gt;,</span></span>
+<span id="cb4-32"><a href="#cb4-32"></a><span class="co">#&gt; #   language &lt;chr&gt;, footprintSRS &lt;chr&gt;, datasetName &lt;chr&gt;, waterBody &lt;chr&gt;,</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a><span class="co">#&gt; #   depth &lt;dbl&gt;, country &lt;chr&gt;, references &lt;chr&gt;, dynamicProperties &lt;chr&gt;,</span></span>
+<span id="cb4-34"><a href="#cb4-34"></a><span class="co">#&gt; #   bibliographicCitation &lt;chr&gt;, continent &lt;chr&gt;,</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a><span class="co">#&gt; #   scientificNameAuthorship &lt;chr&gt;, specificEpithet &lt;chr&gt;, verbatimDepth &lt;chr&gt;,</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a><span class="co">#&gt; #   occurrenceRemarks &lt;chr&gt;, footprintWKT &lt;chr&gt;, locationID &lt;chr&gt;</span></span></code></pre></div>
+<p>A convenience function <code>map_leaflet()</code> is provided to visualize occurrences on an interactive map:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">map_leaflet</span>(<span class="kw">occurrence</span>(<span class="st">&quot;Abra sibogai&quot;</span>))</span></code></pre></div>
+</div>
+<div id="checklists" class="section level2">
+<h2>Checklists</h2>
+<p>The <code>checklist()</code> function returns all taxa observed for a given set of filters.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">checklist</span>(<span class="st">&quot;Semelidae&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co">#&gt; # A tibble: 108 x 41</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">#&gt;    scientificName   scientificNameAut… taxonID ncbi_id taxonRank taxonomicStatus</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">#&gt;    &lt;chr&gt;            &lt;chr&gt;                &lt;int&gt;   &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;          </span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt;  1 Abra alba        (W. Wood, 1802)     141433  399303 Species   accepted       </span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">#&gt;  2 Abra nitida      (O. F. Müller, 17…  141435  358434 Species   accepted       </span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt;  3 Scrobicularia p… (da Costa, 1778)    141424  665965 Species   accepted       </span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt;  4 Abra prismatica  (Montagu, 1808)     141436  183592 Species   accepted       </span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co">#&gt;  5 Abra tenuis      (Montagu, 1803)     141439      NA Species   accepted       </span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">#&gt;  6 Abra             Lamarck, 1818       138474  121180 Genus     accepted       </span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">#&gt;  7 Abra segmentum   (Récluz, 1843)      141438      NA Species   accepted       </span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">#&gt;  8 Theora lubrica   Gould, 1861         233903 1230554 Species   accepted       </span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="co">#&gt;  9 Semelidae        Stoliczka, 1870 (…    1781  121179 Family    accepted       </span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="co">#&gt; 10 Abra aequalis    (Say, 1822)         293683 2175524 Species   accepted       </span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="co">#&gt; # … with 98 more rows, and 35 more variables: acceptedNameUsage &lt;chr&gt;,</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="co">#&gt; #   acceptedNameUsageID &lt;int&gt;, is_marine &lt;lgl&gt;, is_brackish &lt;lgl&gt;,</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="co">#&gt; #   kingdom &lt;chr&gt;, phylum &lt;chr&gt;, class &lt;chr&gt;, subclass &lt;chr&gt;, infraclass &lt;chr&gt;,</span></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co">#&gt; #   subterclass &lt;chr&gt;, superorder &lt;chr&gt;, order &lt;chr&gt;, superfamily &lt;chr&gt;,</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="co">#&gt; #   family &lt;chr&gt;, kingdomid &lt;int&gt;, phylumid &lt;int&gt;, classid &lt;int&gt;,</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a><span class="co">#&gt; #   subclassid &lt;int&gt;, infraclassid &lt;int&gt;, subterclassid &lt;int&gt;,</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a><span class="co">#&gt; #   superorderid &lt;int&gt;, orderid &lt;int&gt;, superfamilyid &lt;int&gt;, familyid &lt;int&gt;,</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a><span class="co">#&gt; #   records &lt;int&gt;, genus &lt;chr&gt;, genusid &lt;int&gt;, species &lt;chr&gt;, speciesid &lt;int&gt;,</span></span>
+<span id="cb6-23"><a href="#cb6-23"></a><span class="co">#&gt; #   bold_id &lt;int&gt;, is_freshwater &lt;lgl&gt;, is_terrestrial &lt;lgl&gt;, wrims &lt;lgl&gt;,</span></span>
+<span id="cb6-24"><a href="#cb6-24"></a><span class="co">#&gt; #   subspecies &lt;chr&gt;, subspeciesid &lt;int&gt;</span></span></code></pre></div>
+<p>Just like the <code>occurrence()</code> function, <code>checklist()</code> accepts WKT geometries:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">checklist</span>(<span class="dt">geometry =</span> <span class="st">&quot;POLYGON ((2.59689 51.16772, 2.62436 51.14059, 2.76066 51.19225, 2.73216 51.20946, 2.59689 51.16772))&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co">#&gt; # A tibble: 902 x 73</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#&gt;    scientificName      taxonID ncbi_id taxonomicStatus acceptedNameUsage  </span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co">#&gt;    &lt;chr&gt;                 &lt;int&gt;   &lt;int&gt; &lt;chr&gt;           &lt;chr&gt;              </span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#&gt;  1 Nematoda                799    6231 accepted        Nematoda           </span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">#&gt;  2 Abra alba            141433  399303 accepted        Abra alba          </span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt;  3 Sabatieria celtica   121360  319964 accepted        Sabatieria celtica </span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co">#&gt;  4 Sabatieria punctata  153130  320140 accepted        Sabatieria punctata</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co">#&gt;  5 Spiophanes bombyx    131187  696728 accepted        Spiophanes bombyx  </span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co">#&gt;  6 Kurtiella bidentata  345281 1177057 accepted        Kurtiella bidentata</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="co">#&gt;  7 Nephtys hombergii    130359   36121 accepted        Nephtys hombergii  </span></span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="co">#&gt;  8 Oligochaeta            2036      NA accepted        Oligochaeta        </span></span>
+<span id="cb7-13"><a href="#cb7-13"></a><span class="co">#&gt;  9 Cirratulidae            919   46590 accepted        Cirratulidae       </span></span>
+<span id="cb7-14"><a href="#cb7-14"></a><span class="co">#&gt; 10 Fabulina fabula      146907      NA accepted        Fabulina fabula    </span></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="co">#&gt; # … with 892 more rows, and 68 more variables: acceptedNameUsageID &lt;int&gt;,</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="co">#&gt; #   is_marine &lt;lgl&gt;, is_brackish &lt;lgl&gt;, is_freshwater &lt;lgl&gt;,</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="co">#&gt; #   is_terrestrial &lt;lgl&gt;, records &lt;int&gt;, taxonRank &lt;chr&gt;, kingdom &lt;chr&gt;,</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="co">#&gt; #   kingdomid &lt;int&gt;, phylum &lt;chr&gt;, phylumid &lt;int&gt;,</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a><span class="co">#&gt; #   scientificNameAuthorship &lt;chr&gt;, class &lt;chr&gt;, classid &lt;int&gt;, subclass &lt;chr&gt;,</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a><span class="co">#&gt; #   order &lt;chr&gt;, superfamily &lt;chr&gt;, family &lt;chr&gt;, subclassid &lt;int&gt;,</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a><span class="co">#&gt; #   orderid &lt;int&gt;, superfamilyid &lt;int&gt;, familyid &lt;int&gt;, infraclass &lt;chr&gt;,</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a><span class="co">#&gt; #   infraclassid &lt;int&gt;, subterclass &lt;chr&gt;, superorder &lt;chr&gt;,</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a><span class="co">#&gt; #   subterclassid &lt;int&gt;, superorderid &lt;int&gt;, suborder &lt;chr&gt;, suborderid &lt;int&gt;,</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a><span class="co">#&gt; #   subfamily &lt;chr&gt;, subfamilyid &lt;int&gt;, subphylum &lt;chr&gt;, subphylumid &lt;int&gt;,</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a><span class="co">#&gt; #   superclass &lt;chr&gt;, superclassid &lt;int&gt;, subkingdom &lt;chr&gt;, infrakingdom &lt;chr&gt;,</span></span>
+<span id="cb7-26"><a href="#cb7-26"></a><span class="co">#&gt; #   subkingdomid &lt;int&gt;, infrakingdomid &lt;int&gt;, genus &lt;chr&gt;, genusid &lt;int&gt;,</span></span>
+<span id="cb7-27"><a href="#cb7-27"></a><span class="co">#&gt; #   infraphylum &lt;chr&gt;, infraphylumid &lt;int&gt;, hab &lt;lgl&gt;, bold_id &lt;int&gt;,</span></span>
+<span id="cb7-28"><a href="#cb7-28"></a><span class="co">#&gt; #   species &lt;chr&gt;, speciesid &lt;int&gt;, infraorder &lt;chr&gt;, parvorder &lt;chr&gt;,</span></span>
+<span id="cb7-29"><a href="#cb7-29"></a><span class="co">#&gt; #   infraorderid &lt;int&gt;, parvorderid &lt;int&gt;, tribe &lt;chr&gt;, tribeid &lt;int&gt;,</span></span>
+<span id="cb7-30"><a href="#cb7-30"></a><span class="co">#&gt; #   wrims &lt;lgl&gt;, subgenus &lt;chr&gt;, subgenusid &lt;int&gt;, category &lt;chr&gt;,</span></span>
+<span id="cb7-31"><a href="#cb7-31"></a><span class="co">#&gt; #   section &lt;chr&gt;, subsection &lt;chr&gt;, sectionid &lt;int&gt;, subsectionid &lt;int&gt;,</span></span>
+<span id="cb7-32"><a href="#cb7-32"></a><span class="co">#&gt; #   subspecies &lt;chr&gt;, subspeciesid &lt;int&gt;, variety &lt;chr&gt;, varietyid &lt;int&gt;,</span></span>
+<span id="cb7-33"><a href="#cb7-33"></a><span class="co">#&gt; #   forma &lt;chr&gt;, formaid &lt;int&gt;</span></span></code></pre></div>
+</div>
+<div id="measurements-and-facts" class="section level2">
+<h2>Measurements and facts</h2>
+<p>The package also provides access to <code>MeasurementOrFact</code> records associated with occurrences. When calling <code>occurrence()</code>, <code>MeasurementOrFact</code> records can be included by setting <code>mof = true</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>occ &lt;-<span class="st"> </span><span class="kw">occurrence</span>(<span class="st">&quot;Abra tenuis&quot;</span>, <span class="dt">mof =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p><code>MeasurementOrFact</code> records are nested in the occurrence, but the <code>measurements()</code> function allows you to extract them to a flat data frame. Use the <code>fields</code> parameter to indicate which occurrence fields need to be preserved in the measurements table.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>mof &lt;-<span class="st"> </span><span class="kw">measurements</span>(occ, <span class="dt">fields =</span> <span class="kw">c</span>(<span class="st">&quot;scientificName&quot;</span>, <span class="st">&quot;decimalLongitude&quot;</span>, <span class="st">&quot;decimalLatitude&quot;</span>))</span>
+<span id="cb9-2"><a href="#cb9-2"></a>mof</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#&gt; # A tibble: 19,394 x 17</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co">#&gt;    scientificName decimalLongitude decimalLatitude measurementDeterminedBy</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt;    &lt;chr&gt;                     &lt;dbl&gt;           &lt;dbl&gt; &lt;chr&gt;                  </span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt;  1 Abra tenuis               -1.19            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt;  2 Abra tenuis               -1.19            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt;  3 Abra tenuis               -1.19            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt;  4 Abra tenuis               -1.19            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt;  5 Abra tenuis               -1.19            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt;  6 Abra tenuis               -1.20            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt;  7 Abra tenuis               -1.20            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt;  8 Abra tenuis               -1.20            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="co">#&gt;  9 Abra tenuis               -1.20            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; 10 Abra tenuis               -1.20            46.3 &lt;NA&gt;                   </span></span>
+<span id="cb9-16"><a href="#cb9-16"></a><span class="co">#&gt; # … with 19,384 more rows, and 13 more variables: measurementAccuracy &lt;chr&gt;,</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">#&gt; #   measurementValue &lt;chr&gt;, measurementRemarks &lt;chr&gt;, measurementValueID &lt;chr&gt;,</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">#&gt; #   level &lt;int&gt;, occurrenceID &lt;chr&gt;, measurementUnit &lt;chr&gt;,</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">#&gt; #   measurementDeterminedDate &lt;chr&gt;, measurementType &lt;chr&gt;,</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="co">#&gt; #   measurementUnitID &lt;chr&gt;, measurementTypeID &lt;chr&gt;, measurementID &lt;chr&gt;,</span></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="co">#&gt; #   measurementMethod &lt;chr&gt;</span></span></code></pre></div>
+<p>Note that the <code>MeasurementOrFact</code> fields can be used as parameters to the <code>occurrence()</code> function. For example, to only get occurrences with associated biomass measurements:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">library</span>(dplyr)</span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">occurrence</span>(<span class="st">&quot;Abra tenuis&quot;</span>, <span class="dt">mof =</span> <span class="ot">TRUE</span>, <span class="dt">measurementtype =</span> <span class="st">&quot;biomass&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="st">  </span><span class="kw">measurements</span>()</span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#&gt; # A tibble: 29 x 15</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="co">#&gt;    id       measurementDeter… measurementAccu… measurementValue measurementRema…</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">#&gt;    &lt;chr&gt;    &lt;lgl&gt;             &lt;lgl&gt;            &lt;chr&gt;            &lt;lgl&gt;           </span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">#&gt;  1 10582b4… NA                NA               0,04             NA              </span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt;  2 10582b4… NA                NA               mire with debri… NA              </span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="co">#&gt;  3 13f2c93… NA                NA               0,07             NA              </span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="co">#&gt;  4 13f2c93… NA                NA               mire             NA              </span></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="co">#&gt;  5 1b72b8b… NA                NA               0,12             NA              </span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="co">#&gt;  6 1b72b8b… NA                NA               mire             NA              </span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="co">#&gt;  7 208286b… NA                NA               0,11             NA              </span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="co">#&gt;  8 208286b… NA                NA               fine sand        NA              </span></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="co">#&gt;  9 2a98512… NA                NA               0,05             NA              </span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="co">#&gt; 10 2a98512… NA                NA               mire with debris NA              </span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="co">#&gt; # … with 19 more rows, and 10 more variables: measurementValueID &lt;lgl&gt;,</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="co">#&gt; #   level &lt;int&gt;, occurrenceID &lt;chr&gt;, measurementUnit &lt;chr&gt;,</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="co">#&gt; #   measurementDeterminedDate &lt;lgl&gt;, measurementType &lt;chr&gt;,</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a><span class="co">#&gt; #   measurementUnitID &lt;chr&gt;, measurementTypeID &lt;lgl&gt;, measurementID &lt;lgl&gt;,</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="co">#&gt; #   measurementMethod &lt;lgl&gt;</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

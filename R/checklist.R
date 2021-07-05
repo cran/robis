@@ -3,7 +3,8 @@
 #' @usage checklist(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 #'   nodeid = NULL, areaid = NULL, startdate = NULL, enddate = NULL,
 #'   startdepth = NULL, enddepth = NULL, geometry = NULL, redlist = NULL,
-#'   hab = NULL, flags = NULL, exclude = NULL, verbose = FALSE)
+#'   hab = NULL, wrims = NULL, dropped = NULL, flags = NULL, exclude = NULL,
+#'   verbose = FALSE)
 #' @param scientificname the scientific name.
 #' @param taxonid the taxon identifier (WoRMS AphiaID).
 #' @param datasetid the dataset identifier.
@@ -16,6 +17,8 @@
 #' @param geometry a WKT geometry string.
 #' @param redlist include only IUCN Red List species.
 #' @param hab include only IOC-UNESCO HAB species.
+#' @param wrims include only WRiMS species.
+#' @param dropped only include dropped records (\code{TRUE}), exclude dropped records (\code{NULL}) or include dropped records (\code{include}).
 #' @param flags quality flags which need to be set.
 #' @param exclude quality flags to be excluded from the results.
 #' @param verbose logical. Optional parameter to enable verbose logging (default = \code{FALSE}).
@@ -38,6 +41,8 @@ checklist <- function(
   geometry = NULL,
   redlist = NULL,
   hab = NULL,
+  wrims = NULL,
+  dropped = NULL,
   flags = NULL,
   exclude = NULL,
   verbose = FALSE
@@ -63,18 +68,15 @@ checklist <- function(
       geometry = geometry,
       redlist = handle_logical(redlist),
       hab = handle_logical(hab),
+      wrims = handle_logical(wrims),
+      dropped = dropped,
       flags = handle_vector(flags),
       exclude = handle_vector(exclude),
       partition = partition
     )
 
-    result <- http_request("GET", "checklist", query)
-
-    if (verbose) {
-      log_request(result)
-    }
-
-    stop_for_status(result)
+    result <- http_request("GET", "checklist", query, verbose)
+    if (is.null(result)) return(invisible(NULL))
 
     text <- content(result, "text", encoding = "UTF-8")
     res <- fromJSON(text, simplifyVector = TRUE)

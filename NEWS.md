@@ -1,3 +1,23 @@
+# robis 2.6.0
+
+Improved handling of API connection errors.
+
+# robis 2.5.0
+
+Performance improvement by only fetching total hits on the first request.
+
+# robis 2.4.0
+
+Added `taxon()`.
+
+# robis 2.3.11
+
+Fix for https://github.com/iobis/robis/issues/71.
+
+# robis 2.3.10
+
+Added the `qcfields` parameter.
+
 # robis 2.3.9
 
 Documentation fixes.
