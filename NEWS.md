@@ -1,3 +1,27 @@
+# robis 2.8.1
+
+Documentation fixes.
+
+# robis 2.8.0
+
+Added support for DNADerivedData records.
+
+# robis 2.7.2
+
+Improved handling of API connection errors. Skip tests that fail when the API is down on CRAN.
+
+# robis 2.7.1
+
+Faster extraction of measurements with `measurements()`.
+
+# robis 2.7.0
+
+Added the `instituteid` parameter.
+
+# robis 2.6.1
+
+Improved handling of API connection errors.
+
 # robis 2.6.0
 
 Improved handling of API connection errors.

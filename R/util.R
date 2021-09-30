@@ -64,16 +64,24 @@ http_request <- function(method, path, query, verbose=FALSE) {
   }
   url <- paste0(api_url(), path)
   if (method == "GET") {
-    result <- tryCatch(get(url, user_agent("robis - https://github.com/iobis/robis"), query = query), error = handle_request_error)
+    result <- tryCatch(
+      get(url, user_agent("robis - https://github.com/iobis/robis"), query = query),
+      error = handle_request_error
+    )
   } else if (method == "POST") {
-    result <- tryCatch(post(url, user_agent("robis - https://github.com/iobis/robis"), body = query), error = handle_request_error)
+    result <- tryCatch(
+      post(url, user_agent("robis - https://github.com/iobis/robis"), body = query),
+      error = handle_request_error
+    )
   }
-  if (httr::http_error(result)) {
-    message("Error: The OBIS API was not able to process your request. If the problem persists, please contact helpdesk@obis.org.")
-    return(invisible(NULL))
-  }
-  if (verbose) {
-    log_request(result)
+  if (!is.null(result)) {
+    if (verbose) {
+      log_request(result)
+    }
+    if (httr::http_error(result)) {
+      message("Error: The OBIS API was not able to process your request. If the problem persists, please contact helpdesk@obis.org.")
+      result <- invisible(NULL)
+    }
   }
   return(result)
 }
@@ -99,4 +107,12 @@ log_progress <- function(count, total) {
     pct <- 100
   }
   message(paste0("\rRetrieved ", count, " records of approximately ", total, " (", pct, "%)", sep = ""), appendLF = FALSE)
+}
+
+get_dwc_fields <- function(url) {
+  cont <- xml2::read_xml(content(GET(url), "text"))
+  cont %>%
+    xml_ns_strip() %>%
+    xml_find_all("//property") %>%
+    xml_attr("name")
 }
