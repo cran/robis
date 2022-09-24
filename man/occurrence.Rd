@@ -9,9 +9,9 @@ occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
   startdepth = NULL, enddepth = NULL, geometry = NULL,
   measurementtype = NULL, measurementtypeid = NULL, measurementvalue = NULL,
   measurementvalueid = NULL, measurementunit = NULL, measurementunitid = NULL,
-  redlist = NULL, hab = NULL, wrims = NULL, mof = NULL, dna = NULL, absence = NULL,
-  event = NULL, dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
-  qcfields = NULL, verbose = FALSE)
+  redlist = NULL, hab = NULL, wrims = NULL, extensions = NULL, hasextensions = NULL,
+  mof = NULL, dna = NULL, absence = NULL, event = NULL, dropped = NULL,
+  flags = NULL, exclude = NULL, fields = NULL, qcfields = NULL, verbose = FALSE)
 }
 \arguments{
 \item{scientificname}{the scientific name.}
@@ -54,6 +54,10 @@ occurrence(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 
 \item{wrims}{include only WRiMS species.}
 
+\item{extensions}{which extensions to include (e.g. MeasurementOrFact, DNADerivedData, default = \code{NULL}).}
+
+\item{hasextensions}{which extensions need to be present (e.g. MeasurementOrFact, DNADerivedData, default = \code{NULL}).}
+
 \item{mof}{include measurements data (default = \code{NULL}).}
 
 \item{dna}{include DNA data (default = \code{NULL}).}
@@ -83,5 +87,4 @@ Find occurrences.
 \examples{
 records <- occurrence(scientificname = "Abra sibogai")
 records <- occurrence(taxonid = 141438, startdate = as.Date("2007-10-10"))
-records <- occurrence(taxon = 141438, geometry = "POLYGON ((0 0, 0 45, 45 45, 45 0, 0 0))")
 }

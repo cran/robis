@@ -3,7 +3,8 @@
 #' @usage dataset(scientificname = NULL, taxonid = NULL, datasetid = NULL,
 #'   nodeid = NULL, instituteid = NULL, areaid = NULL, startdate = NULL,
 #'   enddate = NULL, startdepth = NULL, enddepth = NULL, geometry = NULL,
-#'   redlist = NULL, hab = NULL, wrims = NULL, exclude = NULL, verbose = FALSE)
+#'   redlist = NULL, hab = NULL, wrims = NULL, hasextensions = NULL,
+#'   exclude = NULL, verbose = FALSE)
 #' @param scientificname the scientific name.
 #' @param taxonid the taxon identifier (WoRMS AphiaID).
 #' @param datasetid the dataset identifier.
@@ -18,6 +19,7 @@
 #' @param redlist include only IUCN Red List species.
 #' @param hab include only IOC-UNESCO HAB species.
 #' @param wrims include only WRiMS species.
+#' @param hasextensions which extensions need to be present (e.g. MeasurementOrFact, DNADerivedData, default = \code{NULL}).
 #' @param exclude quality flags to be excluded from the results.
 #' @param verbose logical. Optional parameter to enable verbose logging (default = \code{FALSE}).
 #' @return The datasets.
@@ -41,6 +43,7 @@ dataset <- function(
   redlist = NULL,
   hab = NULL,
   wrims = NULL,
+  hasextensions = NULL,
   exclude = NULL,
   verbose = FALSE
 ) {
@@ -68,6 +71,7 @@ dataset <- function(
       redlist = handle_logical(redlist),
       hab = handle_logical(hab),
       wrims = handle_logical(wrims),
+      hasextensions = handle_vector(hasextensions),
       exclude = handle_vector(exclude),
       skip = skip,
       size = page_size()
@@ -84,7 +88,7 @@ dataset <- function(
     if (!is.null(res$results) && is.data.frame(res$results) && nrow(res$results) > 0) {
       res$results$node_id <- sapply(res$results$nodes, function(x) { return(paste0(x$id, collapse = ",")) })
       res$results$node_name <- sapply(res$results$nodes, function(x) { return(paste0(x$name, collapse = ",")) })
-      res$results <- res$results[,!(names(res$results) %in% c("node", "feed", "institutes", "contacts"))]
+      res$results <- res$results[,!(names(res$results) %in% c("node", "feed", "institutes"))]
       result_list[[i]] <- res$results
       fetched <- fetched + nrow(res$results)
       log_progress(fetched, total)

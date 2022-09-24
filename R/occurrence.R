@@ -5,9 +5,9 @@
 #'   startdepth = NULL, enddepth = NULL, geometry = NULL,
 #'   measurementtype = NULL, measurementtypeid = NULL, measurementvalue = NULL,
 #'   measurementvalueid = NULL, measurementunit = NULL, measurementunitid = NULL,
-#'   redlist = NULL, hab = NULL, wrims = NULL, mof = NULL, dna = NULL, absence = NULL,
-#'   event = NULL, dropped = NULL, flags = NULL, exclude = NULL, fields = NULL,
-#'   qcfields = NULL, verbose = FALSE)
+#'   redlist = NULL, hab = NULL, wrims = NULL, extensions = NULL, hasextensions = NULL,
+#'   mof = NULL, dna = NULL, absence = NULL, event = NULL, dropped = NULL,
+#'   flags = NULL, exclude = NULL, fields = NULL, qcfields = NULL, verbose = FALSE)
 #' @param scientificname the scientific name.
 #' @param taxonid the taxon identifier (WoRMS AphiaID).
 #' @param datasetid the dataset identifier.
@@ -28,6 +28,8 @@
 #' @param redlist include only IUCN Red List species.
 #' @param hab include only IOC-UNESCO HAB species.
 #' @param wrims include only WRiMS species.
+#' @param extensions which extensions to include (e.g. MeasurementOrFact, DNADerivedData, default = \code{NULL}).
+#' @param hasextensions which extensions need to be present (e.g. MeasurementOrFact, DNADerivedData, default = \code{NULL}).
 #' @param mof include measurements data (default = \code{NULL}).
 #' @param dna include DNA data (default = \code{NULL}).
 #' @param absence only include absence records (\code{TRUE}), exclude absence records (\code{NULL}) or include absence records (\code{include}).
@@ -42,7 +44,6 @@
 #' @examples
 #' records <- occurrence(scientificname = "Abra sibogai")
 #' records <- occurrence(taxonid = 141438, startdate = as.Date("2007-10-10"))
-#' records <- occurrence(taxon = 141438, geometry = "POLYGON ((0 0, 0 45, 45 45, 45 0, 0 0))")
 #' @export
 occurrence <- function(
   scientificname = NULL,
@@ -65,6 +66,8 @@ occurrence <- function(
   redlist = NULL,
   hab = NULL,
   wrims = NULL,
+  extensions = NULL,
+  hasextensions = NULL,
   mof = NULL,
   dna = NULL,
   absence = NULL,
@@ -104,6 +107,8 @@ occurrence <- function(
     redlist = handle_logical(redlist),
     hab = handle_logical(hab),
     wrims = handle_logical(wrims),
+    extensions = handle_vector(extensions),
+    hasextensions = handle_vector(hasextensions),
     mof = handle_logical(mof),
     dna = handle_logical(dna),
     absence = absence,

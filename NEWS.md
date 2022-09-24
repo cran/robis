@@ -1,3 +1,27 @@
+# robis 2.11.3
+
+Warnings and notes fixes.
+
+# robis 2.11.1
+
+Do not download extension definitions on package load.
+
+# robis 2.11.0
+
+Added `generate_citation()`.
+
+# robis 2.10.1
+
+Added contacts to `dataset()`.
+
+# robis 2.10.0
+
+Added the `unnest_extension()` function for extracting extension records.
+
+# robis 2.9.0
+
+Added `extensions` and `hasextensions` parameters.
+
 # robis 2.8.2
 
 Updated vignette so the code is not evaluated during CRAN checks.
